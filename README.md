@@ -89,7 +89,7 @@ rrd.update(filename, 'busy', [[now, value].join(':')], function (error) {
 
 ## fetch
 ```js
-rrd.fetch(String filename, String cf, Integer start, Integer end, Integer steps, Function callback(Integer time, Object data)) 
+rrd.fetch(String filename, String cf, Integer start, Integer end, Integer steps, Function callback(Error err, Array data)) 
 ```
 
 Example:

@@ -104,25 +104,38 @@ static void async_after(uv_work_t *req) {
     HandleScope scope;
 
     Infos * info = static_cast<Infos*>(req->data);
+
+    Handle<Value> error = Null();
+    Handle<Value> result = Null();
     
     if (info->status == 0) {
         rrd_value_t *datai;
         long ti;
 
         datai = info->data;
+
+        size_t result_length = (info->end - info->start)/info->step;
+
+        Handle<Array> rrd_data = Array::New(result_length);
+
+        uint32_t index = 0;
         for (ti = info->start + info->step; ti <= info->end; ti += info->step) {
-            Handle<Value> argv[] = { Number::New(ti), current_data_to_object(info->ds_cnt, info->ds_namv, datai++) };
-            info->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+            Handle<Array> row = Array::New(2);
+            row->Set(0, Number::New(ti));
+            row->Set(1, current_data_to_object(info->ds_cnt, info->ds_namv, datai++));
+
+            rrd_data->Set(index, row);
+            index++;
         }
-        
-        /* Last callback with (null, null) */
-        Handle<Value> argv[] = { Null(), Null() };
-        info->callback->Call(Context::GetCurrent()->Global(), 2, argv);
+        result = rrd_data;
         
     } else {
-        Handle<Value> args[] = { Number::New(info->status) };
-        info->callback->Call(Context::GetCurrent()->Global(), 1, args);
+        error = Exception::Error(String::New(rrd_get_error()));
     }
+
+    Handle<Value> argv[] = {error, result};
+
+    info->callback->Call(Context::GetCurrent()->Global(), 2, argv);
 
     delete(info);
 }
