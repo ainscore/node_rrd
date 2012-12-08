@@ -97,8 +97,12 @@ Example:
 var filename = '/tmp/test.rrd';
 var now = Math.ceil((new Date).getTime() / 1000);
 
-rrd.fetch(filename, "LAST", now - 1000, now, null, function (time, data) { 
-	console.log(time, data); 
+rrd.fetch(filename, "LAST", now - 1000, now, 10, function (err, data) { 
+    for(var ii=0; ii<data.length; ii++) {
+        var time = data[0][0]; //Integer
+        var data = data[0][1].value; 
+        console.log(time, data); 
+    }
 });
 ```
 
