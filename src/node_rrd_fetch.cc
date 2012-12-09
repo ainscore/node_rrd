@@ -120,9 +120,9 @@ static void async_after(uv_work_t *req) {
 
         uint32_t index = 0;
         for (ti = info->start + info->step; ti <= info->end; ti += info->step) {
-            Handle<Array> row = Array::New(2);
-            row->Set(0, Number::New(ti));
-            row->Set(1, current_data_to_object(info->ds_cnt, info->ds_namv, datai++));
+            Handle<Object> row = Object::New();
+            row->Set(String::New("time"), Number::New(ti));
+            row->Set(String::New("data"), current_data_to_object(info->ds_cnt, info->ds_namv, datai++));
 
             rrd_data->Set(index, row);
             index++;
