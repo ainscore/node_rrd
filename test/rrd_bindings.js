@@ -88,19 +88,10 @@ describe('Native bindings', function(){
     	})
 
     	it('should fetch', function (done) {
-    		
-    		/* 
-    			While doing this test case I thought it could be useful to have a completed callback
-    		 	in the fetch to be able to do things like this. 
-    		 	For now this test case is pretty broken!
-
-    		 	Comments ?...
-    		 */
-        // var already_done = false;
-    		rrd_bindings.fetch(filename, 'LAST', now()-3600, now(), null, function (time, data) {
-          // assert(typeof data !== 'undefined');
-          // if (!already_done) { already_done = true; done(); }
-          if (time === null && data === null) done();
+    		rrd_bindings.fetch(filename, 'LAST', now()-3600, now(), null, function (error, data) {
+                assert(typeof data[0] === 'object' );
+                assert(data[0][1].hasOwnProperty('x'));
+                done();
     		})
     	});
     });
